@@ -1,5 +1,5 @@
-import moedaParaNumero from "./convertCoin.js";
-import stringToDate from "./convertDate.js";
+import moedaParaNumero from "./moedaParaNumero.js";
+import stringToDate from "./stringToDate.js";
 
 declare global {
   type TransacaoPagamento = "Boleto" | "Cartão de Crédito";
@@ -23,17 +23,19 @@ declare global {
   interface Transacao {
     nome: string;
     id: number;
-    data: string;
+    data: Date;
     status: TransacaoStatus;
     email: string;
     moeda: string;
     valor: number | null;
-    formaDePagamento: TransacaoPagamento;
-    clienteNovo: boolean;
+    pagamento: TransacaoPagamento;
+    novo: boolean;
   }
 }
 
-export default function transformData(transacao: TransacaoAPI) {
+export default function normalizarTransacao(
+  transacao: TransacaoAPI
+): Transacao {
   return {
     nome: transacao.Nome,
     id: transacao.ID,
@@ -42,7 +44,7 @@ export default function transformData(transacao: TransacaoAPI) {
     email: transacao.Email,
     moeda: transacao["Valor (R$)"],
     valor: moedaParaNumero(transacao["Valor (R$)"]),
-    formaDePagamento: transacao["Forma de Pagamento"],
-    clienteNovo: Boolean(transacao["Cliente Novo"]),
+    pagamento: transacao["Forma de Pagamento"],
+    novo: Boolean(transacao["Cliente Novo"]),
   };
 }
